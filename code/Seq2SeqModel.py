@@ -30,7 +30,7 @@ class Seq2SeqModel(LightningModule):
 
     def forward(self, x, X_len, y_dec_ip):
         # Encoder forward (optionally use X_len for packing)
-        _, encoder_hidden = self.encoder(x, X_len.cpu())
+        _, encoder_hidden = self.encoder(x, X_len)
         # Decoder forward
         logits, _ = self.decoder(y_dec_ip, encoder_hidden)
         return logits
@@ -38,7 +38,7 @@ class Seq2SeqModel(LightningModule):
     def training_step(self, batch):
 
         x, y_dec_ip, y_dec_op, X_len, _, _ = batch
-
+        X_len = X_len.cpu()
         logits = self(x, X_len, y_dec_ip)  # (batch, tgt_len, vocab_size)
         ## reshaping to match the required shape of (N,C) for logits
         ## and (N,) for label
@@ -63,7 +63,7 @@ class Seq2SeqModel(LightningModule):
     def validation_step(self, batch):
 
         x, y_dec_ip, y_dec_op, X_len, _, _ = batch
-
+        X_len = X_len.cpu()
         logits = self(x, X_len, y_dec_ip)  # (batch, tgt_len, vocab_size)
         ## reshaping to match the required shape of (N,C) for logits
         ## and (N,) for label
