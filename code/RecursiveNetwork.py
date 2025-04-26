@@ -53,7 +53,7 @@ class EncoderNetwork(LightningModule):
 
     def forward(
         self, x: torch.tensor, lengths: torch.tensor
-    ) -> tuple(torch.tensor, torch.tensor):
+    ) -> tuple[torch.tensor, torch.tensor]:
         ## Initialize H0
         ##! The doc said the H0 will dafault to zeros. Going to check this https://pytorch.org/docs/stable/generated/torch.nn.RNN.html#torch.nn.RNN
         e_x = self.embedding(x)
@@ -115,7 +115,7 @@ class DecoderNetwork(nn.Module):
 
     def forward(
         self, y_decoder_input: torch.tensor, encoder_hidden: torch.tensor
-    ) -> tuple(torch.tensor, torch.tensor):
+    ) -> tuple[torch.tensor, torch.tensor]:
         """
         y_decoder_input: (batch, tgt_seq_len)
         encoder_hidden: (num_layers * num_directions, batch, hidden_size)

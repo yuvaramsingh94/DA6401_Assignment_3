@@ -13,6 +13,11 @@ class Config:
         self.Y_max_length = 26
         self.recurrent_layer_type = "RNN"
         self.encoder_hidden_size = 256
+        ## For now will use same number of enc and decoder
+        ## This is to avoid the hidden state mismatch between
+        ## Encoder and decoder
+        ## The actual solution is to use linear layer to adjust the required
+        ## shape but it will add additional training parameters
         self.num_encoder_layers = 1
         self.encoder_dropout_prob = 0.0
         self.encoder_bidir = False
@@ -20,9 +25,11 @@ class Config:
         self.Y_vocab_size = (
             48 + 1
         )  ## Here +1 is because the nn.Embedding layer throws this error AssertionError =  Padding_idx must be within num_embeddings
+        ## Same hidden size mismatch error between encoder and decoder
         self.decoder_embedding_size = 128
         self.Y_padding_idx = 48
         self.decoder_hidden_size = 256
+        ## same value as num_encoder_layers
         self.num_decoder_layers = 1
         self.decoder_dropout_prob = 0.0
         self.decoder_bidir = False

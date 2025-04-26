@@ -59,15 +59,15 @@ sweep_configuration = {
     "parameters": {
         "learning_rate": {"max": 0.0001, "min": 0.0000001},
         "encoder_embedding_size": {"values": [128, 256, 512, 64]},
-        "recurrent_layer_type": {"values": ["RNN", "LSTM", "GRU"]},
-        "encoder_hidden_size": {"values": [128, 256, 512, 64]},
+        "recurrent_layer_type": {"values": ["LSTM", "RNN", "GRU"]},
+        "hidden_size": {"values": [128, 256, 512, 64]},
         "batch_size": {"values": [16, 32, 64]},
-        "num_encoder_layers": {"values": [2, 4, 6]},
+        "num_layers": {"values": [2, 4, 6]},
         "encoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
         "encoder_nonlinearity": {"values": ["tanh"]},
         "decoder_embedding_size": {"values": [128, 256, 512, 64]},
-        "decoder_hidden_size": {"values": [128, 256, 512, 64]},
-        "num_decoder_layers": {"values": [2, 4, 6]},
+        # "decoder_hidden_size": {"values": [128, 256, 512, 64]},
+        # "num_decoder_layers": {"values": [2, 4, 6]},
         "decoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
         "decoder_nonlinearity": {"values": ["tanh"]},
     },
@@ -109,13 +109,13 @@ def main():
     config.batch_size = wandb.config.batch_size
     config.encoder_embedding_size = wandb.config.encoder_embedding_size
     config.recurrent_layer_type = wandb.config.recurrent_layer_type
-    config.encoder_hidden_size = wandb.config.encoder_hidden_size
-    config.num_encoder_layers = wandb.config.num_encoder_layers
+    config.encoder_hidden_size = wandb.config.hidden_size
+    config.num_encoder_layers = wandb.config.num_layers
     config.encoder_dropout_prob = wandb.config.encoder_dropout_prob
     config.encoder_nonlinearity = wandb.config.encoder_nonlinearity
     config.decoder_embedding_size = wandb.config.decoder_embedding_size
-    config.decoder_hidden_size = wandb.config.decoder_hidden_size
-    config.num_decoder_layers = wandb.config.num_decoder_layers
+    config.decoder_hidden_size = wandb.config.hidden_size
+    config.num_decoder_layers = wandb.config.num_layers
     config.decoder_dropout_prob = wandb.config.decoder_dropout_prob
     config.decoder_nonlinearity = wandb.config.decoder_nonlinearity
 

@@ -12,14 +12,14 @@ class CustomTextDataset(Dataset):
         Y_max_length: int,
         X_vocab_size: int,
         Y_vocab_size: int,
-    ) -> tuple(
+    ) -> tuple[
         torch.tensor,
         torch.tensor,
         torch.tensor,
         torch.tensor,
         torch.tensor,
         torch.tensor,
-    ):
+    ]:
         """
         Text dataset for translit from English to Tamil task.
 
