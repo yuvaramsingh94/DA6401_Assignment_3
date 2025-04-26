@@ -60,7 +60,7 @@ class EncoderNetwork(LightningModule):
 
         ## Pack the padded input for better computation
         packed = pack_padded_sequence(
-            e_x, lengths.cpu(), batch_first=True, enforce_sorted=False
+            e_x, lengths.to(torch.device("cpu")), batch_first=True, enforce_sorted=False
         )
 
         output_packed, h_n = self.recursive_layer(packed)
