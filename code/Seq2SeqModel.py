@@ -30,7 +30,7 @@ class Seq2SeqModel(LightningModule):
 
     def forward(self, x, X_len, y_dec_ip):
         # Encoder forward (optionally use X_len for packing)
-        _, encoder_hidden = self.encoder(x, X_len)
+        _, encoder_hidden = self.encoder(x, X_len.cpu())
         # Decoder forward
         logits, _ = self.decoder(y_dec_ip, encoder_hidden)
         return logits
