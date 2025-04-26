@@ -76,7 +76,7 @@ sweep_configuration = {
         "decoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
         "decoder_nonlinearity": {"values": ["tanh"]},
     },
-    "early_terminate": {"type": "hyperband", "min_iter": 2, "eta": 2},
+    "early_terminate": {"type": "hyperband", "min_iter": 3, "eta": 2},
 }
 
 train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
@@ -90,22 +90,13 @@ def main():
     tuning.
     """
     config = Config()
-    if args.kaggle:
 
-        wandb.init(
-            # Set the project where this run will be logged
-            project=config.wandb_project,
-            # Track hyperparameters and run metadata
-            # config=config,
-        )
-    else:
-
-        wandb.init(
-            # Set the project where this run will be logged
-            project=config.wandb_project,
-            # Track hyperparameters and run metadata
-            # config=config,
-        )
+    wandb.init(
+        # Set the project where this run will be logged
+        project=config.wandb_project,
+        # Track hyperparameters and run metadata
+        # config=config,
+    )
 
     wandb.run.name = f"basic_RNN_{wandb.config.recurrent_layer_type}"
 
@@ -126,18 +117,18 @@ def main():
 
     train_dataset = CustomTextDataset(
         dataset_df=train_df,
-        X_max_length=30,
-        Y_max_length=26,
-        X_vocab_size=26,
-        Y_vocab_size=48,
+        X_max_length=config.X_max_length,
+        Y_max_length=config.Y_max_length,
+        X_vocab_size=config.X_vocab_size,
+        Y_vocab_size=config.Y_vocab_size,
     )
 
     val_dataset = CustomTextDataset(
         dataset_df=val_df,
-        X_max_length=30,
-        Y_max_length=26,
-        X_vocab_size=26,
-        Y_vocab_size=48,
+        X_max_length=config.X_max_length,
+        Y_max_length=config.Y_max_length,
+        X_vocab_size=config.X_vocab_size,
+        Y_vocab_size=config.Y_vocab_size,
     )
 
     train_loader = DataLoader(

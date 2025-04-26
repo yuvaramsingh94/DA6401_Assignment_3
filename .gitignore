@@ -175,3 +175,4 @@ cython_debug/
 dataset/*
 code/wandb/*
 wandb/*
+assignment_3/*

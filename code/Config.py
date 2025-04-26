@@ -10,7 +10,7 @@ class Config:
         )  ## Here +1 is because the nn.Embedding layer throws this error AssertionError =  Padding_idx must be within num_embeddings
         self.X_padding_idx = 26
         self.X_max_length = 30
-        self.Y_max_length = 26
+        self.Y_max_length = 27
         self.recurrent_layer_type = "RNN"
         self.encoder_hidden_size = 256
         ## For now will use same number of enc and decoder
