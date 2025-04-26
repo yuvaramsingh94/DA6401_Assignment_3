@@ -52,6 +52,11 @@ if args.kaggle:
         "/kaggle", "input", "intro-to-dl-a2-d", "inaturalist_12K"
     )
 
+if args.colab:
+    DATASET_PATH = os.path.join(
+        "/content", "DA6401_Assignment_3", "dataset", "lexicons"
+    )
+
 
 sweep_configuration = {
     "method": "random",
