@@ -121,6 +121,8 @@ def main():
         Y_max_length=config.Y_max_length,
         X_vocab_size=config.X_vocab_size,
         Y_vocab_size=config.Y_vocab_size,
+        X_padding_idx=config.X_padding_idx,
+        Y_padding_idx=config.Y_padding_idx,
     )
 
     val_dataset = CustomTextDataset(
@@ -129,6 +131,8 @@ def main():
         Y_max_length=config.Y_max_length,
         X_vocab_size=config.X_vocab_size,
         Y_vocab_size=config.Y_vocab_size,
+        X_padding_idx=config.X_padding_idx,
+        Y_padding_idx=config.Y_padding_idx,
     )
 
     train_loader = DataLoader(

@@ -12,6 +12,8 @@ class CustomTextDataset(Dataset):
         Y_max_length: int,
         X_vocab_size: int,
         Y_vocab_size: int,
+        X_padding_idx: int,
+        Y_padding_idx: int,
     ) -> tuple[
         torch.tensor,
         torch.tensor,
@@ -35,6 +37,8 @@ class CustomTextDataset(Dataset):
         self.Y_max_length = Y_max_length
         self.X_vocab_size = X_vocab_size
         self.Y_vocab_size = Y_vocab_size
+        self.X_padding_idx = X_padding_idx
+        self.Y_padding_idx = Y_padding_idx
 
     def __len__(self):
         return len(self.dataset_df)
@@ -53,17 +57,17 @@ class CustomTextDataset(Dataset):
         Y_decoder_op_len = len(Y_decoder_op)
         if X_len < self.X_max_length:
             ## self.X_vocab_size refer to the padding index (last)
-            X.extend([self.X_vocab_size] * (self.X_max_length - X_len))
+            X.extend([self.X_padding_idx] * (self.X_max_length - X_len))
         ## Decoder IP
         if Y_decoder_ip_len < self.Y_max_length:
             ## self.Y_vocab_size refer to the padding index (last)
             Y_decoder_ip.extend(
-                [self.Y_vocab_size] * (self.Y_max_length - Y_decoder_ip_len)
+                [self.Y_padding_idx] * (self.Y_max_length - Y_decoder_ip_len)
             )
         if Y_decoder_op_len < self.Y_max_length:
             ## self.Y_vocab_size refer to the padding index (last)
             Y_decoder_op.extend(
-                [self.Y_vocab_size] * (self.Y_max_length - Y_decoder_op_len)
+                [self.Y_padding_idx] * (self.Y_max_length - Y_decoder_op_len)
             )
         ## Padding index
         ## X : English
