@@ -74,6 +74,6 @@ class CustomTextDataset(Dataset):
         Y_decoder_op = torch.tensor(Y_decoder_op, dtype=torch.long)
 
         X_len = torch.tensor(X_len, dtype=torch.long)
-        Y_decoder_ip_len = torch.tensor(Y_decoder_ip_len, dtype=torch.long)
-        Y_decoder_op_len = torch.tensor(Y_decoder_op_len, dtype=torch.long)
+        Y_decoder_ip_len = torch.tensor(Y_decoder_ip_len, dtype=torch.int)
+        Y_decoder_op_len = torch.tensor(Y_decoder_op_len, dtype=torch.int)
         return X, Y_decoder_ip, Y_decoder_op, X_len, Y_decoder_ip_len, Y_decoder_op_len
