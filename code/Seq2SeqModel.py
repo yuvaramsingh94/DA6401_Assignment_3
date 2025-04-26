@@ -9,9 +9,6 @@ from lightning import LightningModule
 from lightning import Trainer, seed_everything
 from RecursiveNetwork import EncoderNetwork, DecoderNetwork
 
-SEED = 5
-seed_everything(SEED, workers=True)
-
 
 class Seq2SeqModel(LightningModule):
     def __init__(self, config):
