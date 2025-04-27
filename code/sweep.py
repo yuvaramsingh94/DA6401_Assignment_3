@@ -180,6 +180,6 @@ def main():
 
 config = Config()
 ## initialize the HPT
-sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
-# sweep_id = "fslxevuv"
+# sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
+sweep_id = "u4fsteim"
 wandb.agent(sweep_id, function=main, count=50, project=config.wandb_project)
