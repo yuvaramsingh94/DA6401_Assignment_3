@@ -48,9 +48,7 @@ else:
 ## Dataloader
 DATASET_PATH = os.path.join("dataset", "dakshina_dataset_v1.0", "ta", "lexicons")
 if args.kaggle:
-    DATASET_PATH = os.path.join(
-        "/kaggle", "input", "intro-to-dl-a2-d", "inaturalist_12K"
-    )
+    DATASET_PATH = os.path.join("/kaggle", "input", "intro-to-dl-a3-d", "lexicons")
 
 if args.colab:
     DATASET_PATH = os.path.join(
@@ -182,4 +180,4 @@ config = Config()
 ## initialize the HPT
 # sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
 sweep_id = "u4fsteim"
-wandb.agent(sweep_id, function=main, count=50, project=config.wandb_project)
+wandb.agent(sweep_id, function=main, count=5, project=config.wandb_project)
