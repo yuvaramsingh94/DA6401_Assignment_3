@@ -65,8 +65,8 @@ sweep_configuration = {
         "recurrent_layer_type": {"values": ["LSTM", "RNN", "GRU"]},
         "hidden_size": {"values": [128, 256, 512, 64]},
         "batch_size": {"values": [16, 32, 64]},
-        # "num_layers": {"values": [1, 2, 4, 6]},
-        "num_layers": {"values": [1]},
+        "num_layers": {"values": [1, 2, 4, 6]},
+        # "num_layers": {"values": [1]},
         "encoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
         "encoder_nonlinearity": {"values": ["tanh"]},
         # "decoder_embedding_size": {"values": [128, 256, 512, 64]},
@@ -183,6 +183,6 @@ def main():
 
 config = Config()
 ## initialize the HPT
-# sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
-sweep_id = "acx1b9fn"
+sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
+# sweep_id = "acx1b9fn"
 wandb.agent(sweep_id, function=main, count=5, project=config.wandb_project)
