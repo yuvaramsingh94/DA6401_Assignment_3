@@ -4,18 +4,32 @@ import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch.nn.functional as F
 from lightning.pytorch.loggers import WandbLogger
-
+from Config import Config
 from lightning import LightningModule
 from lightning import Trainer, seed_everything
-from RecursiveNetwork import EncoderNetwork, DecoderNetwork
+from RecursiveNetwork import (
+    EncoderNetwork,
+    DecoderNetwork,
+    RNNAttentionDecoder,
+    LSTMAttenDecoder,
+    GRUAttenDecoder,
+)
 
 
 class Seq2SeqModel(LightningModule):
-    def __init__(self, config):
+    def __init__(self, config: Config):
         super().__init__()
         self.config = config
         self.encoder = EncoderNetwork(self.config)
-        self.decoder = DecoderNetwork(self.config)
+        if not self.config.attention_model:
+            self.decoder = DecoderNetwork(self.config)
+        else:
+            if self.config.recurrent_layer_type == "RNN":
+                self.decoder = RNNAttentionDecoder(self.config)
+            elif self.config.recurrent_layer_type == "LSTM":
+                self.decoder = LSTMAttenDecoder(self.config)
+            elif self.config.recurrent_layer_type == "GRU":
+                self.decoder = GRUAttenDecoder(self.config)
         self.loss_fn = nn.CrossEntropyLoss(
             ignore_index=self.config.Y_padding_idx  # Mask out padding positions
         )
@@ -30,16 +44,29 @@ class Seq2SeqModel(LightningModule):
 
     def forward(self, x, X_len, y_dec_ip):
         # Encoder forward (optionally use X_len for packing)
-        _, encoder_hidden = self.encoder(x, X_len)
-        # Decoder forward
-        logits, _ = self.decoder(y_dec_ip, encoder_hidden)
-        return logits
+        encoder_outputs, encoder_hidden = self.encoder(x, X_len)
+        if not self.config.attention_model:
+
+            # Decoder forward
+            logits, _ = self.decoder(y_dec_ip, encoder_hidden)
+            return logits
+        else:
+            ## attention model
+            encoder_mask = (
+                x != self.config.X_padding_idx
+            ).int()  # shape (batch, src seg len)
+            logits = self.decoder(
+                y_dec_ip, encoder_outputs, encoder_hidden, encoder_mask
+            )
+            return logits
 
     def training_step(self, batch):
 
         x, y_dec_ip, y_dec_op, X_len, _, _ = batch
         X_len = X_len.cpu().long()
         logits = self(x, X_len, y_dec_ip)  # (batch, tgt_len, vocab_size)
+        if isinstance(logits, tuple):
+            (logits, attn_weight_list) = logits
         ## reshaping to match the required shape of (N,C) for logits
         ## and (N,) for label
         logits = logits.view(-1, logits.size(-1))
@@ -65,6 +92,8 @@ class Seq2SeqModel(LightningModule):
         x, y_dec_ip, y_dec_op, X_len, _, _ = batch
         X_len = X_len.cpu().long()
         logits = self(x, X_len, y_dec_ip)  # (batch, tgt_len, vocab_size)
+        if isinstance(logits, tuple):
+            (logits, attn_weight_list) = logits
         ## reshaping to match the required shape of (N,C) for logits
         ## and (N,) for label
         logits = logits.view(-1, logits.size(-1))

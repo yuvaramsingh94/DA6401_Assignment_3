@@ -1,7 +1,7 @@
 class Config:
     def __init__(self):
         self.wandb_project = "assignment_3"
-        self.wandb_entity = "v1"
+        self.wandb_entity = "v1_attention"
         self.epoch = 5
         self.batch_size = 16
         self.encoder_embedding_size = 128
@@ -38,3 +38,5 @@ class Config:
             48  ## No need for extra digit for padding s required by nn.Embedding
         )
         self.LR = 1e-3
+        self.attention_size = 128
+        self.attention_model = True

@@ -56,29 +56,6 @@ if args.colab:
     )
 
 
-sweep_configuration = {
-    "method": "random",
-    "metric": {"goal": "maximize", "name": "val_acc_epoch"},
-    "parameters": {
-        "learning_rate": {"max": 0.001, "min": 0.0000001},
-        "embedding_size": {"values": [128, 256, 512, 64]},
-        "recurrent_layer_type": {"values": ["LSTM", "RNN", "GRU"]},
-        "hidden_size": {"values": [128, 256, 512, 64]},
-        "batch_size": {"values": [16, 32, 64]},
-        "num_layers": {"values": [2, 4, 6]},
-        "encoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
-        "encoder_nonlinearity": {"values": ["tanh"]},
-        # "decoder_embedding_size": {"values": [128, 256, 512, 64]},
-        # "decoder_hidden_size": {"values": [128, 256, 512, 64]},
-        # "num_decoder_layers": {"values": [2, 4, 6]},
-        "decoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
-        "decoder_nonlinearity": {"values": ["tanh"]},
-        "Attention": {"values": [True]},
-        "Attention_size": {"values": [128, 256, 512, 64]},
-    },
-    "early_terminate": {"type": "hyperband", "min_iter": 3, "eta": 2},
-}
-
 train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
 val_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.dev.idx.csv"))
 
@@ -90,32 +67,6 @@ def main():
     tuning.
     """
     config = Config()
-
-    wandb.init(
-        # Set the project where this run will be logged
-        project=config.wandb_project,
-        # Track hyperparameters and run metadata
-        # config=config,
-    )
-
-    wandb.run.name = f"Atten_rec_{wandb.config.recurrent_layer_type}"
-
-    ## Update the config instance with the hpt from sweep
-    config.LR = wandb.config.learning_rate
-    config.batch_size = wandb.config.batch_size
-    config.encoder_embedding_size = wandb.config.embedding_size
-    config.recurrent_layer_type = wandb.config.recurrent_layer_type
-    config.encoder_hidden_size = wandb.config.hidden_size
-    config.num_encoder_layers = wandb.config.num_layers
-    config.encoder_dropout_prob = wandb.config.encoder_dropout_prob
-    config.encoder_nonlinearity = wandb.config.encoder_nonlinearity
-    config.decoder_embedding_size = wandb.config.embedding_size
-    config.decoder_hidden_size = wandb.config.hidden_size
-    config.num_decoder_layers = wandb.config.num_layers
-    config.decoder_dropout_prob = wandb.config.decoder_dropout_prob
-    config.decoder_nonlinearity = wandb.config.decoder_nonlinearity
-    config.attention_model = wandb.config.Attention
-    config.attention_size = wandb.config.Attention_size
 
     train_dataset = CustomTextDataset(
         dataset_df=train_df,
@@ -170,18 +121,10 @@ def main():
         logger=wandb_logger,
     )  # Added accelerator gpu, can be cpu also, devices set to 1
 
-    try:
-        trainer.fit(lit_model, train_loader, val_loader)
-    finally:
-        # Mandatory cleanup
-        wandb.finish()
-        del lit_model, trainer, train_loader, val_loader
-        torch.cuda.empty_cache()
-        gc.collect()
+    trainer.fit(lit_model, train_loader, val_loader)
 
 
 config = Config()
-## initialize the HPT
-sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
-# sweep_id = "u4fsteim"
-wandb.agent(sweep_id, function=main, count=5, project=config.wandb_project)
+
+if __name__ == "__main__":
+    main()
