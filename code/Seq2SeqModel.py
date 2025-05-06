@@ -51,7 +51,7 @@ class Seq2SeqModel(LightningModule):
             logits, _ = self.decoder(y_dec_ip, encoder_hidden)
             return logits
         else:
-            ## attention model
+            ## encoder model
             encoder_mask = (
                 x != self.config.X_padding_idx
             ).int()  # shape (batch, src seg len)
