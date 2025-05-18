@@ -12,7 +12,9 @@ import pandas as pd
 from Seq2SeqModel import Seq2SeqModel
 from lightning.pytorch.callbacks import ModelCheckpoint
 import json
+import torch.nn.functional as F
 from tqdm import tqdm
+from utils import decoder_function
 
 SEED = 5
 seed_everything(SEED, workers=True)
@@ -86,7 +88,7 @@ tamil_idx_to_char[48] = "-"
 config = Config()
 
 test_dataset = CustomTextDataset(
-    dataset_df=test_df,
+    dataset_df=test_df[:10],
     X_max_length=config.X_max_length,
     Y_max_length=config.Y_max_length,
     X_vocab_size=config.X_vocab_size,
@@ -107,7 +109,7 @@ lit_model = lit_model.eval()
 ## Iterate only for the actual decoder length. this will reduce the computation
 test_correct_prediction_count = 0
 ## TODO For loop over the test data. individual samples
-
+prediction_result_dict = {"Input": [], "Actual_Y": [], "Prediction": []}
 for idx in tqdm(range(len(test_dataset))):
     X, Y_decoder_ip, Y_decoder_op, X_len, Y_decoder_ip_len, Y_decoder_op_len = (
         test_dataset.__getitem__(idx)
@@ -136,6 +138,24 @@ for idx in tqdm(range(len(test_dataset))):
 
     prediction_tensor = torch.cat(prediction_list)
     correct = prediction_tensor == Y_decoder_op[:Y_decoder_op_len]
+
+    ## Store the results to csv
+    pred_str = decoder_function(
+        ",".join([str(pc) for pc in prediction_tensor.detach().numpy()]),
+        idx_to_char_dict=tamil_idx_to_char,
+    )
+    X_str = decoder_function(
+        ",".join([str(xc) for xc in X[0].detach().numpy()]),
+        idx_to_char_dict=english_idx_to_char,
+    )
+    actual_y_str = decoder_function(
+        ",".join([str(ac) for ac in Y_decoder_op[:Y_decoder_op_len].detach().numpy()]),
+        idx_to_char_dict=tamil_idx_to_char,
+    )
+    prediction_result_dict["Input"].append(X_str)
+    prediction_result_dict["Actual_Y"].append(actual_y_str)
+    prediction_result_dict["Prediction"].append(pred_str)
+
     if torch.all(correct):
         test_correct_prediction_count += 1
     else:
@@ -143,3 +163,6 @@ for idx in tqdm(range(len(test_dataset))):
 
 test_accuracy = test_correct_prediction_count / len(test_dataset)
 print("Test accuracy", test_accuracy)
+
+
+pd.DataFrame.from_dict(prediction_result_dict).to_csv(config.PRED_CSV, index=False)

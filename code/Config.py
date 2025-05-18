@@ -49,4 +49,6 @@ class Config:
         self.filename = "test"
 
         ##### Inference #####
-        self.WT_PATH = os.path.join("weights", "Attention", "attention.ckpt")
+        weight_base = os.path.join("weights", "Attention")
+        self.WT_PATH = os.path.join(weight_base, "attention.ckpt")
+        self.PRED_CSV = os.path.join(weight_base, "prediction.csv")
