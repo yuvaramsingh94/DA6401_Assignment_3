@@ -47,3 +47,6 @@ class Config:
         if not os.path.exists(self.dirpath):
             os.makedirs(self.dirpath)
         self.filename = "test"
+
+        ##### Inference #####
+        self.WT_PATH = os.path.join("weights", "Attention", "attention.ckpt")
