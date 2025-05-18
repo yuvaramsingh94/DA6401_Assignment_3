@@ -50,8 +50,12 @@ else:
 ## Dataloader
 DATASET_PATH = os.path.join("dataset", "dakshina_dataset_v1.0", "ta", "lexicons")
 if args.kaggle:
-    if os.path.exists(os.path.join("/kaggle", "input", "intro-to-da-a3-d", "lexicons")):
-        DATASET_PATH = os.path.join("/kaggle", "input", "intro-to-da-a3-d", "lexicons")
+    if os.path.exists(
+        os.path.join("/kaggle", "input", "intro-to-da-a3-d-v2", "lexicons")
+    ):
+        DATASET_PATH = os.path.join(
+            "/kaggle", "input", "intro-to-da-a3-d-v2", "lexicons"
+        )
     else:
         DATASET_PATH = os.path.join("/kaggle", "input", "lexicons")
 
