@@ -116,7 +116,7 @@ class Config:
         self.PRED_CSV = os.path.join(weight_base, "prediction.csv")
 
         ## Kaggle
-        # self.WT_PATH = os.path.join(
-        #     "/kaggle/input/dl-assignment-3-basic-v1", "basic.ckpt"
-        # )
-        # self.PRED_CSV = os.path.join("weights", "prediction.csv")
+        self.WT_PATH = os.path.join(
+            "/kaggle/input/dl-assignment-3-basic-v1", "basic.ckpt"
+        )
+        self.PRED_CSV = os.path.join("weights", "prediction.csv")
