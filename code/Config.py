@@ -7,7 +7,7 @@ class Config:
     def __init__(self):
         self.wandb_project = "assignment_3"
         self.wandb_entity = "v1_attention_full"
-        self.epoch = 50
+        self.epoch = 5
         self.batch_size = 64
         self.encoder_embedding_size = 512
         self.X_vocab_size = (
