@@ -90,7 +90,7 @@ tamil_idx_to_char[48] = "-"
 config = Config()  # is it
 
 test_dataset = CustomTextDataset(
-    dataset_df=train_df[:100],
+    dataset_df=test_df,
     X_max_length=config.X_max_length,
     Y_max_length=config.Y_max_length,
     X_vocab_size=config.X_vocab_size,
@@ -118,46 +118,55 @@ prediction_result_dict = {
     "Actual_Y_idx": [],
     "Prediction_idx": [],
 }
+# predicted_words = []
+
 for idx in tqdm(range(len(test_dataset))):
-    X, Y_decoder_ip, Y_decoder_op, X_len, Y_decoder_ip_len, Y_decoder_op_len = (
-        test_dataset.__getitem__(idx)
-    )
-    X = torch.unsqueeze(X, 0).to(device)
-    Y_decoder_op = Y_decoder_op.to(device)
-    X_len = torch.unsqueeze(X_len, 0)  # .to(device)
-    Y_decoder_ip = torch.unsqueeze(Y_decoder_ip, 0).to(device)
-    prediction_list = []
-    for i in range(1, Y_decoder_op_len + 1):  ## get the len of the decoder input
-        new_decoder_ip = torch.unsqueeze(
-            torch.cat(
-                [
-                    Y_decoder_ip[0][:i],
-                    torch.tensor([config.Y_padding_idx] * (config.Y_max_length - i)).to(
-                        device
-                    ),
-                ]
-            ),
-            axis=0,
-        )
+    X, _, Y_decoder_op, X_len, _, Y_decoder_op_len = test_dataset[idx]
+    X = X.unsqueeze(0).to(device)
+    X_len = X_len.unsqueeze(0)
 
-        ## Prediction
+    # Perform encoder on the input
+    encoder_outputs, encoder_hidden = lit_model.encoder(X, X_len)
+
+    ## Start token for the decoder
+    decoder_input = torch.tensor([[0]], device=device)
+    hidden = encoder_hidden
+    decoded_indices = []
+
+    for _ in range(config.Y_max_length):
         if config.attention_model:
-            (logits, attn_weight_list) = lit_model(X, X_len, new_decoder_ip)
+            # decoder returns logits; some implementations also return new hidden
+            logits, hidden, attn_weight_list = lit_model.decoder(
+                decoder_input,
+                encoder_outputs,
+                hidden,
+                (X != config.X_padding_idx).int(),
+            )
+            # If your attention decoder returns (logits, new_hidden), unpack accordingly
         else:
-            logits = lit_model(X, X_len, new_decoder_ip)
-        logits2 = logits.view(-1, logits.size(-1))
-        prob = F.softmax(logits2, dim=1)
-        preds = torch.argmax(prob, dim=1)
-        prediction_list.append(torch.unsqueeze(preds[i], dim=0))
+            logits, hidden = lit_model.decoder(decoder_input, hidden)
 
-    prediction_tensor = torch.cat(prediction_list).to(device)
-    correct = prediction_tensor == Y_decoder_op[:Y_decoder_op_len]
+        # logits: (1, 1, V) → flatten to (V,)
+        logits = logits.view(-1, logits.size(-1))
+        next_token = torch.argmax(F.softmax(logits, dim=1), dim=1).item()
 
-    ## Store the results to csv
-    pred_str = decoder_function(
-        ",".join([str(pc) for pc in prediction_tensor.detach().cpu().numpy()]),
-        idx_to_char_dict=tamil_idx_to_char,
-    )
+        # Stop at end‐of‐sequence
+        if next_token == config.Y_padding_idx:
+            break
+
+        decoded_indices.append(next_token)
+        # Prepare next input: shape (1,1)
+        decoder_input = torch.tensor([[next_token]], device=device)
+
+    # --- 5. Convert indices → string and store ---
+    word = "".join(tamil_idx_to_char[i] for i in decoded_indices[:Y_decoder_op_len])
+    # predicted_words.append(word)
+
+    # Now predicted_words[i] holds the full predicted word for sample i
+    # print(predicted_words[:5])
+    actual_Y_tokens = Y_decoder_op[:Y_decoder_op_len].detach().cpu().numpy().tolist()
+    correct = decoded_indices[:Y_decoder_op_len] == actual_Y_tokens
+
     X_str = decoder_function(
         ",".join([str(xc) for xc in X[0].detach().cpu().numpy()]),
         idx_to_char_dict=english_idx_to_char,
@@ -170,16 +179,14 @@ for idx in tqdm(range(len(test_dataset))):
     )
     prediction_result_dict["Input"].append(X_str)
     prediction_result_dict["Actual_Y"].append(actual_y_str)
-    prediction_result_dict["Prediction"].append(pred_str)
+    prediction_result_dict["Prediction"].append(word)
 
     prediction_result_dict["Actual_Y_idx"].append(
         Y_decoder_op[:Y_decoder_op_len].detach().cpu().numpy().tolist()
     )
-    prediction_result_dict["Prediction_idx"].append(
-        prediction_tensor.detach().cpu().numpy().tolist()
-    )
+    prediction_result_dict["Prediction_idx"].append(decoded_indices[:Y_decoder_op_len])
 
-    if torch.all(correct):
+    if correct:
         test_correct_prediction_count += 1
     else:
         test_correct_prediction_count += 0

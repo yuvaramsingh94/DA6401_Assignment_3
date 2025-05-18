@@ -329,7 +329,8 @@ class LSTMAttenDecoder(nn.Module):
         attn_weights = torch.cat(
             attn_weights_list, dim=1
         )  # (batch, tgt_seq_len, src_seq_len)
-        return outputs, attn_weights
+        hidden = (h, c)
+        return outputs, hidden, attn_weights
 
 
 class GRUAttenDecoder(nn.Module):

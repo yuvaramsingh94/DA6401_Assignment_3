@@ -1,7 +1,8 @@
 import os
 
 ## ATTENTION
-"""
+
+
 class Config:
     def __init__(self):
         self.wandb_project = "assignment_3"
@@ -52,16 +53,16 @@ class Config:
         ##### Inference #####
         weight_base = os.path.join("weights", "Attention")
         self.WT_PATH = os.path.join(weight_base, "attention.ckpt")
-        self.PRED_CSV = os.path.join(weight_base, "prediction.csv")
+        self.PRED_CSV = os.path.join(weight_base, "attention_prediction.csv")
 
         ## Kaggle
         self.WT_PATH = os.path.join(
             "/kaggle/input/dl-assignment-3-attention-v1", "attention.ckpt"
         )
-        self.PRED_CSV = os.path.join("weights", "prediction.csv")
+        self.PRED_CSV = os.path.join("weights", "attention_prediction.csv")
+
+
 """
-
-
 ## Basic
 class Config:
     def __init__(self):
@@ -113,10 +114,11 @@ class Config:
         ##### Inference #####
         weight_base = os.path.join("weights", "basic")
         self.WT_PATH = os.path.join(weight_base, "basic.ckpt")
-        self.PRED_CSV = os.path.join(weight_base, "prediction.csv")
+        self.PRED_CSV = os.path.join(weight_base, "basic_prediction.csv")
 
         ## Kaggle
-        self.WT_PATH = os.path.join(
-            "/kaggle/input/dl-assignment-3-basic-v1", "basic.ckpt"
-        )
-        self.PRED_CSV = os.path.join("weights", "prediction.csv")
+        # self.WT_PATH = os.path.join(
+        #     "/kaggle/input/dl-assignment-3-basic-v1", "basic.ckpt"
+        # )
+        # self.PRED_CSV = os.path.join("weights", "basic_prediction.csv")
+"""
