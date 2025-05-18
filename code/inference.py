@@ -140,7 +140,7 @@ for idx in tqdm(range(len(test_dataset))):
         preds = torch.argmax(prob, dim=1)
         prediction_list.append(torch.unsqueeze(preds[i], dim=0))
 
-    prediction_tensor = torch.cat(prediction_list)
+    prediction_tensor = torch.cat(prediction_list).to(device)
     correct = prediction_tensor == Y_decoder_op[:Y_decoder_op_len]
 
     ## Store the results to csv
