@@ -146,15 +146,17 @@ for idx in tqdm(range(len(test_dataset))):
 
     ## Store the results to csv
     pred_str = decoder_function(
-        ",".join([str(pc) for pc in prediction_tensor.detach().numpy()]),
+        ",".join([str(pc) for pc in prediction_tensor.detach().cpu().numpy()]),
         idx_to_char_dict=tamil_idx_to_char,
     )
     X_str = decoder_function(
-        ",".join([str(xc) for xc in X[0].detach().numpy()]),
+        ",".join([str(xc) for xc in X[0].detach().cpu().numpy()]),
         idx_to_char_dict=english_idx_to_char,
     )
     actual_y_str = decoder_function(
-        ",".join([str(ac) for ac in Y_decoder_op[:Y_decoder_op_len].detach().numpy()]),
+        ",".join(
+            [str(ac) for ac in Y_decoder_op[:Y_decoder_op_len].detach().cpu().numpy()]
+        ),
         idx_to_char_dict=tamil_idx_to_char,
     )
     prediction_result_dict["Input"].append(X_str)
