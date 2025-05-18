@@ -76,8 +76,8 @@ sweep_configuration = {
         # "num_decoder_layers": {"values": [2, 4, 6]},
         "decoder_dropout_prob": {"values": [0.0, 0.2, 0.4, 0.5]},
         "decoder_nonlinearity": {"values": ["tanh"]},
-        "Attention": {"values": [True]},
-        "Attention_size": {"values": [128, 256, 512, 64]},
+        "Attention": {"values": [False]},
+        # "Attention_size": {"values": [128, 256, 512, 64]},
     },
     "early_terminate": {"type": "hyperband", "min_iter": 3, "eta": 2},
 }
@@ -101,7 +101,7 @@ def main():
         # config=config,
     )
 
-    wandb.run.name = f"Atten_rec_{wandb.config.recurrent_layer_type}"
+    wandb.run.name = f"Basic_rec_{wandb.config.recurrent_layer_type}"
 
     ## Update the config instance with the hpt from sweep
     config.LR = wandb.config.learning_rate
@@ -118,7 +118,7 @@ def main():
     config.decoder_dropout_prob = wandb.config.decoder_dropout_prob
     config.decoder_nonlinearity = wandb.config.decoder_nonlinearity
     config.attention_model = wandb.config.Attention
-    config.attention_size = wandb.config.Attention_size
+    # config.attention_size = wandb.config.Attention_size
 
     train_dataset = CustomTextDataset(
         dataset_df=train_df,
@@ -186,5 +186,5 @@ def main():
 config = Config()
 ## initialize the HPT
 # sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
-sweep_id = "2y7ir7s2"
+sweep_id = "3b7pi7ri"
 wandb.agent(sweep_id, function=main, count=5, project=config.wandb_project)
