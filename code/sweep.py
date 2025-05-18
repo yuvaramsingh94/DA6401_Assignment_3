@@ -85,6 +85,8 @@ sweep_configuration = {
 train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
 val_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.dev.idx.csv"))
 
+print("Train", train_df.shape, "Val", val_df.shape)
+
 
 def main():
     """
