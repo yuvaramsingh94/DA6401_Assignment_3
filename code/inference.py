@@ -68,8 +68,8 @@ if args.colab:
     )
 
 test_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.test.idx.csv"))
-train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
-val_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.dev.idx.csv"))
+# train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
+# val_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.dev.idx.csv"))
 
 with open(
     os.path.join(DATASET_PATH, "tamil_token_index.json"), "r", encoding="utf-8"
