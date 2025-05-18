@@ -10,6 +10,8 @@ from dataloader import CustomTextDataset
 import argparse
 import pandas as pd
 from Seq2SeqModel import Seq2SeqModel
+from lightning.pytorch.callbacks import ModelCheckpoint
+
 
 SEED = 5
 seed_everything(SEED, workers=True)
@@ -107,10 +109,19 @@ def main():
     )
 
     lit_model = Seq2SeqModel(config=config)
+
+    ## Model checkpoint
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=config.dirpath,
+        filename=config.filename,
+        monitor="val_acc_epoch",
+        mode="max",
+    )
+
     wandb_logger = WandbLogger(
         project=config.wandb_project,
         name=config.wandb_entity,
-        log_model=False,
+        log_model="all",
         config=config,
     )
     # lr_monitor = LearningRateMonitor(logging_interval="epoch")
@@ -119,6 +130,7 @@ def main():
         accelerator="auto",
         log_every_n_steps=None,
         logger=wandb_logger,
+        callbacks=[checkpoint_callback],
     )  # Added accelerator gpu, can be cpu also, devices set to 1
 
     trainer.fit(lit_model, train_loader, val_loader)

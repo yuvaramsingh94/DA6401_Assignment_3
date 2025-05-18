@@ -176,3 +176,4 @@ dataset/*
 code/wandb/*
 wandb/*
 assignment_3/*
+weights/*
