@@ -111,7 +111,13 @@ lit_model = lit_model.eval()
 ## Iterate only for the actual decoder length. this will reduce the computation
 test_correct_prediction_count = 0
 ## TODO For loop over the test data. individual samples
-prediction_result_dict = {"Input": [], "Actual_Y": [], "Prediction": []}
+prediction_result_dict = {
+    "Input": [],
+    "Actual_Y": [],
+    "Prediction": [],
+    "Actual_Y_idx": [],
+    "Prediction_idx": [],
+}
 for idx in tqdm(range(len(test_dataset))):
     X, Y_decoder_ip, Y_decoder_op, X_len, Y_decoder_ip_len, Y_decoder_op_len = (
         test_dataset.__getitem__(idx)
@@ -135,7 +141,10 @@ for idx in tqdm(range(len(test_dataset))):
         )
 
         ## Prediction
-        (logits, attn_weight_list) = lit_model(X, X_len, new_decoder_ip)
+        if config.attention_model:
+            (logits, attn_weight_list) = lit_model(X, X_len, new_decoder_ip)
+        else:
+            logits = lit_model(X, X_len, new_decoder_ip)
         logits2 = logits.view(-1, logits.size(-1))
         prob = F.softmax(logits2, dim=1)
         preds = torch.argmax(prob, dim=1)
@@ -162,6 +171,13 @@ for idx in tqdm(range(len(test_dataset))):
     prediction_result_dict["Input"].append(X_str)
     prediction_result_dict["Actual_Y"].append(actual_y_str)
     prediction_result_dict["Prediction"].append(pred_str)
+
+    prediction_result_dict["Actual_Y_idx"].append(
+        Y_decoder_op[:Y_decoder_op_len].detach().cpu().numpy().tolist()
+    )
+    prediction_result_dict["Prediction_idx"].append(
+        prediction_tensor.detach().cpu().numpy().tolist()
+    )
 
     if torch.all(correct):
         test_correct_prediction_count += 1
