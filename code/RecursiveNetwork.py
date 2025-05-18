@@ -238,7 +238,7 @@ class RNNAttentionDecoder(nn.Module):
         attn_weights = torch.cat(
             attn_weights_list, dim=1
         )  # (batch, tgt_seq_len, src_seq_len)
-        return outputs, attn_weights
+        return outputs, hidden, attn_weights
 
 
 class LSTMAttention(nn.Module):
@@ -389,4 +389,4 @@ class GRUAttenDecoder(nn.Module):
         attn_weights = torch.cat(
             attn_weights_list, dim=1
         )  # (batch, tgt_seq_len, src_seq_len)
-        return outputs, attn_weights
+        return outputs, h, attn_weights
