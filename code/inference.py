@@ -90,7 +90,7 @@ tamil_idx_to_char[48] = "-"
 config = Config()
 
 test_dataset = CustomTextDataset(
-    dataset_df=train_df[:10],
+    dataset_df=train_df,
     X_max_length=config.X_max_length,
     Y_max_length=config.Y_max_length,
     X_vocab_size=config.X_vocab_size,
