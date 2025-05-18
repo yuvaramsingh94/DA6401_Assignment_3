@@ -87,7 +87,7 @@ english_idx_to_char[26] = "-"
 tamil_idx_to_char[48] = "-"
 
 
-config = Config()
+config = Config()  # is it
 
 test_dataset = CustomTextDataset(
     dataset_df=train_df,
