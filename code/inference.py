@@ -125,7 +125,9 @@ for idx in tqdm(range(len(test_dataset))):
             torch.cat(
                 [
                     Y_decoder_ip[0][:i],
-                    torch.tensor([config.Y_padding_idx] * (config.Y_max_length - i)),
+                    torch.tensor([config.Y_padding_idx] * (config.Y_max_length - i)).to(
+                        device
+                    ),
                 ]
             ),
             axis=0,
