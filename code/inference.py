@@ -117,7 +117,7 @@ for idx in tqdm(range(len(test_dataset))):
         test_dataset.__getitem__(idx)
     )
     X = torch.unsqueeze(X, 0).to(device)
-    X_len = torch.unsqueeze(X_len, 0).to(device)
+    X_len = torch.unsqueeze(X_len, 0)  # .to(device)
     Y_decoder_ip = torch.unsqueeze(Y_decoder_ip, 0).to(device)
     prediction_list = []
     for i in range(1, Y_decoder_op_len + 1):  ## get the len of the decoder input
