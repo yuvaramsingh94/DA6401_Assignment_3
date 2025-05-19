@@ -115,8 +115,8 @@ class Config:
 
         ##### Inference #####
         weight_base = os.path.join("weights", "basic")
-        # self.WT_PATH = os.path.join(weight_base, "basic.ckpt")
-        # self.PRED_CSV = os.path.join(weight_base, "basic_prediction.csv")
+        self.WT_PATH = os.path.join(weight_base, "basic.ckpt")
+        self.PRED_CSV = os.path.join(weight_base, "basic_prediction.csv")
 
         ## Kaggle
         # self.WT_PATH = os.path.join(
