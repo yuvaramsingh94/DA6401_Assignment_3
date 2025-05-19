@@ -115,7 +115,8 @@ class Config:
         self.prediction_path = os.path.join(
             "predictions_vanilla",
         )
-
+        if not os.path.exists(self.prediction_path):
+            os.makedirs(self.prediction_path)
         self.filename = "test"
 
         ##### Inference #####
