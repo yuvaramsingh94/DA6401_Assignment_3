@@ -6,10 +6,10 @@ import os
 class Config:
     def __init__(self):
         self.wandb_project = "assignment_3"
-        self.wandb_entity = "v2_attention_full"
+        self.wandb_entity = "v3_attention_full"
         self.epoch = 20
         self.batch_size = 32
-        self.encoder_embedding_size = 64
+        self.encoder_embedding_size = 128
         self.X_vocab_size = (
             26 + 1
         )  ## Here +1 is because the nn.Embedding layer throws this error AssertionError =  Padding_idx must be within num_embeddings
@@ -36,7 +36,7 @@ class Config:
         self.decoder_hidden_size = 128
         ## same value as num_encoder_layers
         self.num_decoder_layers = 1
-        self.decoder_dropout_prob = 0.4
+        self.decoder_dropout_prob = 0.2
         self.decoder_bidir = False
         self.decoder_nonlinearity = "tanh"  ## Only for RNN
         self.Y_true_vocab_size = (
