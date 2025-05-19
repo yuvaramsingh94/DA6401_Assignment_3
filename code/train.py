@@ -68,6 +68,8 @@ if args.colab:
 train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
 val_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.dev.idx.csv"))
 
+print("Dataset statistics", train_df.shape, val_df.shape)
+
 
 def main():
     """
