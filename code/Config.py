@@ -53,7 +53,13 @@ class Config:
         ##### Inference #####
         weight_base = os.path.join("weights", "Attention")
         self.WT_PATH = os.path.join(weight_base, "attention.ckpt")
-        self.PRED_CSV = os.path.join(weight_base, "attention_prediction.csv")
+        self.prediction_path = os.path.join(
+            "predictions_attention",
+        )
+        if not os.path.exists(self.prediction_path):
+            os.makedirs(self.prediction_path)
+
+        self.PRED_CSV = os.path.join(self.prediction_path, "attention_prediction.csv")
 
         # ## Kaggle
         # self.WT_PATH = os.path.join(
