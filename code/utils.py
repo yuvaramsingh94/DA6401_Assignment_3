@@ -32,7 +32,7 @@ def str_idx_to_list(
 
 def color_code_text(row) -> str:
     """
-    COlor code the prediction and the actual text
+    Color code the prediction and the actual text
 
     Args:
         row (pandas row): Row from the prediction table
@@ -46,7 +46,8 @@ def color_code_text(row) -> str:
 
     colored = []
     # Compare up to the shorter length
-    for i in range(min(len(actual_text), len(pred_text))):
+    # for i in range(min(len(actual_text), len(pred_text))):
+    for i in range(len(actual_text)):
         char = pred_text[i]
         color = "green" if char == actual_text[i] else "red"
         colored.append(f"<span style='color:{color}'>{char}</span>")

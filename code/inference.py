@@ -190,8 +190,8 @@ for idx in tqdm(range(len(test_dataset))):
         idx_to_char_dict=tamil_idx_to_char,
     )
     prediction_result_dict["Correct"].append(correct)
-    prediction_result_dict["Input"].append(X_str)
-    prediction_result_dict["Actual_Y"].append(actual_y_str.replace("-", ""))
+    prediction_result_dict["Input"].append(X_str.replace("-", ""))
+    prediction_result_dict["Actual_Y"].append(actual_y_str)
     prediction_result_dict["Prediction"].append(word)
 
     prediction_result_dict["Actual_Y_idx"].append(
@@ -212,6 +212,8 @@ pred_df = pd.DataFrame.from_dict(prediction_result_dict)
 pred_df["Correct"] = pred_df["Correct"] * 1
 pred_df.to_csv(config.PRED_CSV, index=False)
 
+## Load the prediction df
+# pred_df = pd.read_csv(os.path.join("predictions_vanilla", "best_basic_prediction.csv"))
 ## Get some correct and wrongly predicted samples
 pred_df = pred_df.sample(frac=1, random_state=SEED)
 pred_to_print_df = pd.concat(
