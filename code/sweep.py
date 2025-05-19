@@ -79,7 +79,7 @@ sweep_configuration = {
         "Attention": {"values": [True]},
         "Attention_size": {"values": [128, 256, 512, 64]},
     },
-    "early_terminate": {"type": "hyperband", "min_iter": 3, "eta": 2},
+    "early_terminate": {"type": "hyperband", "min_iter": 2, "eta": 2},
 }
 
 train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
