@@ -111,12 +111,18 @@ class Config:
         self.dirpath = os.path.join("weights", "basic")
         if not os.path.exists(self.dirpath):
             os.makedirs(self.dirpath)
+
+        self.prediction_path = os.path.join(
+            "predictions_vanilla",
+        )
+
         self.filename = "test"
 
         ##### Inference #####
         weight_base = os.path.join("weights", "basic")
-        self.WT_PATH = os.path.join(weight_base, "basic.ckpt")
-        self.PRED_CSV = os.path.join(weight_base, "basic_prediction.csv")
+
+        self.WT_PATH = os.path.join(weight_base, "best.ckpt")
+        self.PRED_CSV = os.path.join(self.prediction_path, "basic_prediction.csv")
 
         ## Kaggle
         # self.WT_PATH = os.path.join(

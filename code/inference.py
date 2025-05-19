@@ -14,7 +14,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 import json
 import torch.nn.functional as F
 from tqdm import tqdm
-from utils import decoder_function
+from utils import decoder_function, color_code_text
 
 SEED = 5
 seed_everything(SEED, workers=True)
@@ -51,7 +51,6 @@ else:
 
 
 ## Dataloader
-TEST_BATCH_SIZE = 2
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 
@@ -93,6 +92,14 @@ tamil_idx_to_char[48] = "-"
 
 config = Config()  # is it
 
+
+wandb.init(
+    project=config.wandb_project,
+    name="prediction_base_v1",
+    config=config,
+)
+
+
 test_dataset = CustomTextDataset(
     dataset_df=test_df,
     X_max_length=config.X_max_length,
@@ -121,6 +128,7 @@ prediction_result_dict = {
     "Prediction": [],
     "Actual_Y_idx": [],
     "Prediction_idx": [],
+    "Correct": [],
 }
 # predicted_words = []
 
@@ -181,8 +189,9 @@ for idx in tqdm(range(len(test_dataset))):
         ),
         idx_to_char_dict=tamil_idx_to_char,
     )
+    prediction_result_dict["Correct"].append(correct)
     prediction_result_dict["Input"].append(X_str)
-    prediction_result_dict["Actual_Y"].append(actual_y_str)
+    prediction_result_dict["Actual_Y"].append(actual_y_str.replace("-", ""))
     prediction_result_dict["Prediction"].append(word)
 
     prediction_result_dict["Actual_Y_idx"].append(
@@ -197,6 +206,50 @@ for idx in tqdm(range(len(test_dataset))):
 
 test_accuracy = test_correct_prediction_count / len(test_dataset)
 print("Test accuracy", test_accuracy)
+wandb.log({"Test accuracy": test_accuracy})
+
+pred_df = pd.DataFrame.from_dict(prediction_result_dict)
+pred_df["Correct"] = pred_df["Correct"] * 1
+pred_df.to_csv(config.PRED_CSV, index=False)
+
+## Get some correct and wrongly predicted samples
+pred_df = pred_df.sample(frac=1, random_state=SEED)
+pred_to_print_df = pd.concat(
+    [pred_df.query("Correct == 1")[:5], pred_df.query("Correct == 0")[:5]]
+)
 
 
-pd.DataFrame.from_dict(prediction_result_dict).to_csv(config.PRED_CSV, index=False)
+pred_to_print_df["colored prediction"] = pred_to_print_df.apply(color_code_text, axis=1)
+
+# Generate HTML table without escaping HTML tags
+html_table = pred_to_print_df[["Input", "Actual_Y", "colored prediction"]].to_html(
+    escape=False, index=False
+)
+
+html_content = f"""<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="utf-8">
+  <title>Prediction table</title>
+  <style>
+    body {{
+      font-family: 'Noto Sans Tamil', 'Lohit Tamil', sans-serif;
+    }}
+    table.dataframe {{
+      border-collapse: collapse;
+      margin: 1em;
+    }}
+    th, td {{
+      border: 1px solid #666;
+      padding: 4px 8px;
+      text-align: left;
+      vertical-align: top;
+    }}
+  </style>
+</head>
+<body>
+  {html_table}
+</body>
+</html>"""
+
+wandb.log({"Prediction_table": wandb.Html(html_content)})

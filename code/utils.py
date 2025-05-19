@@ -28,3 +28,35 @@ def str_idx_to_list(
     """
 
     return [int(i) for i in character_idx_seq.split(",")]
+
+
+def color_code_text(row) -> str:
+    """
+    COlor code the prediction and the actual text
+
+    Args:
+        row (pandas row): Row from the prediction table
+
+    Returns:
+        str: HTML
+    """
+    input_text = row["Input"]
+    actual_text = row["Actual_Y"]
+    pred_text = row["Prediction"]
+
+    colored = []
+    # Compare up to the shorter length
+    for i in range(min(len(actual_text), len(pred_text))):
+        char = pred_text[i]
+        color = "green" if char == actual_text[i] else "red"
+        colored.append(f"<span style='color:{color}'>{char}</span>")
+
+    # Extra predicted chars (over-prediction)
+    for char in pred_text[len(actual_text) :]:
+        colored.append(f"<span style='color:red'>{char}</span>")
+
+    # Missing chars (under-prediction)
+    for _ in actual_text[len(pred_text) :]:
+        colored.append(f"<span style='color:red'>_</span>")
+
+    return "".join(colored)
