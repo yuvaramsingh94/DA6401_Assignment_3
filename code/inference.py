@@ -95,13 +95,13 @@ config = Config()  # is it
 
 wandb.init(
     project=config.wandb_project,
-    name="prediction_attention_v2",
+    name="prediction_attention_v3_confusion",
     config=config,
 )
 
 
 test_dataset = CustomTextDataset(
-    dataset_df=test_df,
+    dataset_df=test_df[:100],
     X_max_length=config.X_max_length,
     Y_max_length=config.Y_max_length,
     X_vocab_size=config.X_vocab_size,
@@ -255,3 +255,27 @@ html_content = f"""<!DOCTYPE html>
 </html>"""
 
 wandb.log({"Prediction_table": wandb.Html(html_content)})
+
+
+## Wandb log the confusion matrix
+Y_true = []
+for i in pred_df["Actual_Y_idx"]:
+    Y_true.extend(i)
+Y_pred = []
+for i in pred_df["Prediction_idx"]:
+    Y_pred.extend(i)
+
+tamil_idx_to_char = dict(sorted(tamil_idx_to_char.items()))
+class_label = list(tamil_idx_to_char.values())
+
+
+wandb.log(
+    {
+        "Test_confusion_matrix": wandb.plot.confusion_matrix(
+            probs=None,
+            preds=Y_pred,
+            y_true=Y_true,
+            class_names=class_label,
+        )
+    }
+)
