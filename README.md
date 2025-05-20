@@ -21,8 +21,8 @@ DA6401_Assignment_2/
 |       |── train.py \\ Code to train the model
 |       |── utils.py
 |   |── dataset
-|   |── predictions_attention
-|   |── predictions_vanilla
+|   |── predictions_attention \\ Best attention model's prediction of attention 
+|   |── predictions_vanilla \\ Best basic model's prediction of attention
 |   |── weights
 |   |── requirments.txt 
 ```
