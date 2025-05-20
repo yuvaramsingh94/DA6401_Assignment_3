@@ -64,7 +64,7 @@ sweep_configuration = {
     "parameters": {
         "learning_rate": {"max": 0.001, "min": 0.0000001},
         "embedding_size": {"values": [128, 256, 512, 64]},
-        "recurrent_layer_type": {"values": ["LSTM", "RNN", "GRU"]},
+        "recurrent_layer_type": {"values": ["LSTM", "GRU"]},
         "hidden_size": {"values": [128, 256, 512, 64]},
         "batch_size": {"values": [16, 32, 64]},
         "num_layers": {"values": [1, 2, 4, 6]},
@@ -121,7 +121,7 @@ def main():
     config.attention_size = wandb.config.Attention_size
 
     train_dataset = CustomTextDataset(
-        dataset_df=train_df,
+        dataset_df=train_df[:100],
         X_max_length=config.X_max_length,
         Y_max_length=config.Y_max_length,
         X_vocab_size=config.X_vocab_size,
@@ -131,7 +131,7 @@ def main():
     )
 
     val_dataset = CustomTextDataset(
-        dataset_df=val_df,
+        dataset_df=val_df[:100],
         X_max_length=config.X_max_length,
         Y_max_length=config.Y_max_length,
         X_vocab_size=config.X_vocab_size,
@@ -185,6 +185,6 @@ def main():
 
 config = Config()
 ## initialize the HPT
-sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
-# sweep_id = "2y7ir7s2"
-wandb.agent(sweep_id, function=main, count=25, project=config.wandb_project)
+# sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
+sweep_id = "urt26tw3"
+wandb.agent(sweep_id, function=main, count=5, project=config.wandb_project)

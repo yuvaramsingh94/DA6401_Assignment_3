@@ -107,7 +107,7 @@ class Seq2SeqModel(LightningModule):
         prob = F.softmax(logits, dim=1)
         preds = torch.argmax(prob, dim=1)
         correct = (preds == targets).sum().item()
-        batch_size = logits.size(0)
+        # batch_size = logits.size(0)
 
         ## Accuracy at the word level
         preds = preds.view(batch_size, seq_length)
