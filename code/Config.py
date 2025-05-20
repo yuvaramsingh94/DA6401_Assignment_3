@@ -56,8 +56,10 @@ class Config:
         self.prediction_path = os.path.join(
             "predictions_attention",
         )
-        if not os.path.exists(self.prediction_path):
-            os.makedirs(self.prediction_path)
+        self.attn_map_path = os.path.join(self.prediction_path, "attention_map")
+
+        if not os.path.exists(self.attn_map_path):
+            os.makedirs(self.attn_map_path)
 
         self.PRED_CSV = os.path.join(self.prediction_path, "attention_prediction.csv")
 
