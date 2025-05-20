@@ -96,7 +96,7 @@ config = Config()  # is it
 
 wandb.init(
     project=config.wandb_project,
-    name="prediction_attention_v5",
+    name="prediction_basic_v5",
     config=config,
 )
 
