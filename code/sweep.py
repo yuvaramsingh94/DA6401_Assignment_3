@@ -121,7 +121,7 @@ def main():
     config.attention_size = wandb.config.Attention_size
 
     train_dataset = CustomTextDataset(
-        dataset_df=train_df[:100],
+        dataset_df=train_df,
         X_max_length=config.X_max_length,
         Y_max_length=config.Y_max_length,
         X_vocab_size=config.X_vocab_size,
@@ -131,7 +131,7 @@ def main():
     )
 
     val_dataset = CustomTextDataset(
-        dataset_df=val_df[:100],
+        dataset_df=val_df,
         X_max_length=config.X_max_length,
         Y_max_length=config.Y_max_length,
         X_vocab_size=config.X_vocab_size,
