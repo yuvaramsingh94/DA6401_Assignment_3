@@ -60,11 +60,11 @@ if args.colab:
 
 sweep_configuration = {
     "method": "random",
-    "metric": {"goal": "maximize", "name": "val_acc_epoch"},
+    "metric": {"goal": "maximize", "name": "val_word_acc_epoch"},
     "parameters": {
         "learning_rate": {"max": 0.001, "min": 0.0000001},
         "embedding_size": {"values": [128, 256, 512, 64]},
-        "recurrent_layer_type": {"values": ["LSTM", "RNN", "GRU"]},
+        "recurrent_layer_type": {"values": ["LSTM", "GRU"]},
         "hidden_size": {"values": [128, 256, 512, 64]},
         "batch_size": {"values": [16, 32, 64]},
         "num_layers": {"values": [1, 2, 4, 6]},
@@ -79,7 +79,7 @@ sweep_configuration = {
         "Attention": {"values": [False]},
         # "Attention_size": {"values": [128, 256, 512, 64]},
     },
-    "early_terminate": {"type": "hyperband", "min_iter": 3, "eta": 2},
+    "early_terminate": {"type": "hyperband", "min_iter": 2, "eta": 2},
 }
 
 train_df = pd.read_csv(os.path.join(DATASET_PATH, "ta.translit.sampled.train.idx.csv"))
@@ -188,5 +188,5 @@ def main():
 config = Config()
 ## initialize the HPT
 # sweep_id = wandb.sweep(sweep=sweep_configuration, project=config.wandb_project)
-sweep_id = "3b7pi7ri"
+sweep_id = "urt26tw3"
 wandb.agent(sweep_id, function=main, count=5, project=config.wandb_project)

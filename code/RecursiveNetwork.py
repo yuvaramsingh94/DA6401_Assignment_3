@@ -199,7 +199,7 @@ class RNNAttentionDecoder(nn.Module):
         )
         ## IF needed, send encoder attended hidden along with decoder output
         self.fc = nn.Linear(
-            config.decoder_hidden_size,  # + config.encoder_hidden_size,
+            config.decoder_hidden_size + config.encoder_hidden_size,
             config.Y_vocab_size - 1,
         )
 
@@ -231,8 +231,8 @@ class RNNAttentionDecoder(nn.Module):
             output, hidden = self.rnn(rnn_input, hidden)
             output = output.squeeze(1)  # (batch, 1, dec_hidden) -> (batch, dec_hidden)
             ## Concatenate output and context
-            # out = self.fc(torch.cat([output, context], dim=1))
-            out = self.fc(output)  ## only use the output from decoder
+            out = self.fc(torch.cat([output, context], dim=1))
+            # out = self.fc(output)  ## only use the output from decoder
             outputs.append(out.unsqueeze(1))
         outputs = torch.cat(outputs, dim=1)
         attn_weights = torch.cat(
@@ -293,7 +293,7 @@ class LSTMAttenDecoder(nn.Module):
             batch_first=True,
         )
         self.fc = nn.Linear(
-            config.decoder_hidden_size,  # + config.encoder_hidden_size,
+            config.decoder_hidden_size + config.encoder_hidden_size,
             config.Y_vocab_size - 1,
         )
 
@@ -322,8 +322,8 @@ class LSTMAttenDecoder(nn.Module):
             )  # (batch, 1, emb+enc_hidden)
             output, (h, c) = self.lstm(lstm_input, (h, c))
             output = output.squeeze(1)
-            # out = self.fc(torch.cat([output, context], dim=1))  # (batch, vocab_size-1)
-            out = self.fc(output)  # (batch, vocab_size-1)
+            out = self.fc(torch.cat([output, context], dim=1))  # (batch, vocab_size-1)
+            # out = self.fc(output)  # (batch, vocab_size-1)
             outputs.append(out.unsqueeze(1))
         outputs = torch.cat(outputs, dim=1)  # (batch, tgt_seq_len, vocab_size-1)
         attn_weights = torch.cat(
@@ -353,7 +353,7 @@ class GRUAttenDecoder(nn.Module):
             batch_first=True,
         )
         self.fc = nn.Linear(
-            config.decoder_hidden_size,  # + config.encoder_hidden_size,
+            config.decoder_hidden_size + config.encoder_hidden_size,
             config.Y_vocab_size - 1,
         )
 
@@ -382,8 +382,8 @@ class GRUAttenDecoder(nn.Module):
             )  # (batch, 1, emb+enc_hidden)
             output, h = self.gru(gru_input, h)
             output = output.squeeze(1)
-            # out = self.fc(torch.cat([output, context], dim=1))  # (batch, vocab_size-1)
-            out = self.fc(output)  # (batch, vocab_size-1)
+            out = self.fc(torch.cat([output, context], dim=1))  # (batch, vocab_size-1)
+            # out = self.fc(output)  # (batch, vocab_size-1)
             outputs.append(out.unsqueeze(1))
         outputs = torch.cat(outputs, dim=1)  # (batch, tgt_seq_len, vocab_size-1)
         attn_weights = torch.cat(

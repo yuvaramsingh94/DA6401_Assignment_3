@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import torch
 import wandb
 import gc
+import numpy as np
 from lightning.pytorch.loggers import WandbLogger
 import os
 from lightning import Trainer, seed_everything
@@ -95,7 +96,7 @@ config = Config()  # is it
 
 wandb.init(
     project=config.wandb_project,
-    name="prediction_base_v1",
+    name="prediction_attention_v5",
     config=config,
 )
 
@@ -123,6 +124,7 @@ lit_model = lit_model.eval()
 test_correct_prediction_count = 0
 ## TODO For loop over the test data. individual samples
 prediction_result_dict = {
+    "Sample_id": [],
     "Input": [],
     "Actual_Y": [],
     "Prediction": [],
@@ -131,7 +133,7 @@ prediction_result_dict = {
     "Correct": [],
 }
 # predicted_words = []
-
+top_9_attention_maps_list = []
 for idx in tqdm(range(len(test_dataset))):
     X, _, Y_decoder_op, X_len, _, Y_decoder_op_len = test_dataset[idx]
     X = X.unsqueeze(0).to(device)
@@ -144,7 +146,7 @@ for idx in tqdm(range(len(test_dataset))):
     decoder_input = torch.tensor([[0]], device=device)
     hidden = encoder_hidden
     decoded_indices = []
-
+    attention_map_list = []
     for _ in range(config.Y_max_length):
         if config.attention_model:
             # decoder returns logits; some implementations also return new hidden
@@ -155,6 +157,8 @@ for idx in tqdm(range(len(test_dataset))):
                 (X != config.X_padding_idx).int(),
             )
             # If your attention decoder returns (logits, new_hidden), unpack accordingly
+            attn_weight_list = attn_weight_list.squeeze(0)
+            attention_map_list.append(attn_weight_list)
         else:
             logits, hidden = lit_model.decoder(decoder_input, hidden)
 
@@ -169,8 +173,18 @@ for idx in tqdm(range(len(test_dataset))):
         decoded_indices.append(next_token)
         # Prepare next input: shape (1,1)
         decoder_input = torch.tensor([[next_token]], device=device)
+    if config.attention_model:
+        attention_map = (
+            torch.concat(attention_map_list, dim=0)
+            .detach()
+            .cpu()
+            .numpy()[:Y_decoder_op_len, :X_len]
+        )
+        np.savez(
+            os.path.join(config.attn_map_path, f"{idx}.npz"),
+            attention_map=attention_map,
+        )
 
-    # --- 5. Convert indices → string and store ---
     word = "".join(tamil_idx_to_char[i] for i in decoded_indices[:Y_decoder_op_len])
     # predicted_words.append(word)
 
@@ -189,6 +203,7 @@ for idx in tqdm(range(len(test_dataset))):
         ),
         idx_to_char_dict=tamil_idx_to_char,
     )
+    prediction_result_dict["Sample_id"].append(idx)
     prediction_result_dict["Correct"].append(correct)
     prediction_result_dict["Input"].append(X_str.replace("-", ""))
     prediction_result_dict["Actual_Y"].append(actual_y_str)
@@ -255,3 +270,27 @@ html_content = f"""<!DOCTYPE html>
 </html>"""
 
 wandb.log({"Prediction_table": wandb.Html(html_content)})
+
+
+## Wandb log the confusion matrix
+Y_true = []
+for i in pred_df["Actual_Y_idx"]:
+    Y_true.extend(i)
+Y_pred = []
+for i in pred_df["Prediction_idx"]:
+    Y_pred.extend(i)
+
+tamil_idx_to_char = dict(sorted(tamil_idx_to_char.items()))
+class_label = list(tamil_idx_to_char.values())
+
+
+wandb.log(
+    {
+        "Test_confusion_matrix": wandb.plot.confusion_matrix(
+            probs=None,
+            preds=Y_pred,
+            y_true=Y_true,
+            class_names=class_label,
+        )
+    }
+)
