@@ -6,7 +6,7 @@ import os
 class Config:
     def __init__(self):
         self.wandb_project = "assignment_3"
-        self.wandb_entity = "v6_attention_full_v2"
+        self.wandb_entity = "v6_attention_full_v3"
         self.epoch = 20
         self.batch_size = 64
         self.encoder_embedding_size = 256
