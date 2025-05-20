@@ -177,3 +177,7 @@ code/wandb/*
 wandb/*
 assignment_3/*
 weights/*
+predictions_attention/attention_map/*
+*.zip
+*/attention_map.zip
+
