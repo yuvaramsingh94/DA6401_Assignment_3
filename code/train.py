@@ -121,7 +121,7 @@ def main():
     checkpoint_callback = ModelCheckpoint(
         dirpath=config.dirpath,
         filename=config.filename,
-        monitor="val_acc_epoch",
+        monitor="val_word_acc_epoch",
         mode="max",
     )
 

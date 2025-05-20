@@ -60,7 +60,7 @@ if args.colab:
 
 sweep_configuration = {
     "method": "random",
-    "metric": {"goal": "maximize", "name": "val_acc_epoch"},
+    "metric": {"goal": "maximize", "name": "val_word_acc_epoch"},
     "parameters": {
         "learning_rate": {"max": 0.001, "min": 0.0000001},
         "embedding_size": {"values": [128, 256, 512, 64]},
